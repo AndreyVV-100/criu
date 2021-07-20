@@ -116,7 +116,7 @@ class coredump:
             buf.write(vma.data)
 
         buf.seek(0)
-        f.write(str(buf.read()))
+        f.write(buf.read())
 
 
 class coredump_generator:
@@ -181,7 +181,7 @@ class coredump_generator:
         for p in self.coredumps:
             if pid and p != pid:
                 continue
-            with open(coredumps_dir + "/" + "core." + str(p), 'w+') as f:
+            with open(coredumps_dir + "/" + "core." + str(p), 'wb+') as f:
                 self.coredumps[p].write(f)
 
     def _gen_coredump(self, pid):
