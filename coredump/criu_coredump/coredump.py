@@ -29,6 +29,7 @@
 #    4) VMAs contents;
 #
 import io
+import sys
 from . import elf
 import ctypes
 from pycriu import images
@@ -311,8 +312,12 @@ class coredump_generator:
         prpsinfo.pr_ppid = pstree["ppid"]
         prpsinfo.pr_pgrp = pstree["pgid"]
         prpsinfo.pr_sid = pstree["sid"]
-        prpsinfo.pr_fname = core["tc"]["comm"].encode()
         prpsinfo.pr_psargs = self._gen_cmdline(pid)
+        if (sys.version_info > (3, 0)):
+            prpsinfo.pr_fname = core["tc"]["comm"].encode()
+        else:
+            prpsinfo.pr_fname = core["tc"]["comm"]
+
 
         nhdr = elf.Elf64_Nhdr()
         nhdr.n_namesz = 5
@@ -573,7 +578,10 @@ class coredump_generator:
             setattr(data, "start" + str(i), info.start)
             setattr(data, "end" + str(i), info.end)
             setattr(data, "file_ofs" + str(i), info.file_ofs)
-            setattr(data, "name" + str(i), info.name.encode())
+            if (sys.version_info > (3, 0)):
+                setattr(data, "name" + str(i), info.name.encode())
+            else:
+                setattr(data, "name" + str(i), info.name)
 
         nhdr = elf.Elf64_Nhdr()
 
